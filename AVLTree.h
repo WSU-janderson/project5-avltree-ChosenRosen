@@ -28,11 +28,12 @@ public:
     [[nodiscard]] size_t getHeight() const;
     [[nodiscard]] std::vector<KeyType> keys() const;
     [[nodiscard]] std::optional<ValueType> get(const KeyType& key) const;
-    [[nodiscard]] std::vector<KeyType> findRange( const KeyType& lowKey, const KeyType& highKey) const;
+    [[nodiscard]] std::vector<ValueType> findRange( const KeyType& lowKey, const KeyType& highKey) const;
 
     [[nodiscard]] bool empty() const;
     [[nodiscard]] bool contains(const KeyType& key) const;
 
+    void clear();
     bool insert(const KeyType& key, ValueType value);
     bool remove(const KeyType& key);
 
@@ -62,7 +63,12 @@ private:
 
     static AVLNode* cloneTree(const AVLNode* currRoot);
 
+    AVLNode* binarySearchParent(const KeyType& key, AVLNode* currNode, bool& sideWithChild) const;
+    AVLNode* binarySearch(const KeyType& key, AVLNode* currNode) const;
+    bool binaryInsert(const KeyType& key, ValueType value, AVLNode* currNode);
     static void postOrderTraversalRemove(const AVLNode* currNode);
+    static void inOrderTraversalKeys(std::vector<AVLTree::KeyType>& keyVector, const AVLNode* currNode);
+    static void inOrderTraversalValues(std::vector<AVLTree::ValueType>& valueVector, const AVLNode* currNode, const KeyType& minKey, const KeyType& maxKey);
 
     // /* Helper methods for remove */
     // // this overloaded remove will do the recursion to remove the node

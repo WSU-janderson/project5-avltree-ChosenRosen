@@ -5,13 +5,129 @@ instead for you to get an idea of how to test the tree
  */
 #include "AVLTree.h"
 #include <iostream>
+#include <random>
 #include <string>
 #include <ranges>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
-
 int main() {
+
+    AVLTree tree;
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    std::vector<size_t> randInserts;
+    for (int i=0; i<20; ++i) {
+        randInserts.push_back(i);
+    }
+    std::mt19937 rngEngine(std::random_device{}());
+    ranges::shuffle(randInserts, rngEngine);
+    for (size_t val : randInserts) {
+        tree.insert(val, "");
+    }
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    AVLTree anotherTree;
+    anotherTree.insert(5, "five");
+    anotherTree.insert(1, "one");
+    anotherTree.insert(7, "seven");
+    anotherTree.insert(0, "zero");
+    anotherTree.insert(3, "three");
+    anotherTree.insert(6, "six");
+    anotherTree.insert(8, "eight");
+    anotherTree.insert(2, "two");
+    anotherTree.insert(4, "four");
+    anotherTree.insert(9, "nine");
+    std::cout << anotherTree.empty() << " " << anotherTree.getHeight() << " " << anotherTree.size() << std::endl;
+    std::cout << anotherTree << std::endl;
+
+    tree = anotherTree;
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    anotherTree.clear();
+    std::cout << anotherTree.empty() << " " << anotherTree.getHeight() << " " << anotherTree.size() << std::endl;
+    std::cout << anotherTree << std::endl;
+
+    tree.insert(8, "IMPOSTOR!");
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree[3] = "blarg";
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+    tree[3] = "three";
+
+    std::optional<AVLTree::ValueType> optReturn = tree.get(3);
+    if (optReturn.has_value()) std::cout << optReturn.value() << std::endl;
+    else std::cout << "Not in tree" << std::endl;
+    optReturn = tree.get(11);
+    if (optReturn.has_value()) std::cout << optReturn.value() << std::endl;
+    else std::cout << "Not in tree" << std::endl;
+
+    std::vector<AVLTree::KeyType> keyList = tree.keys();
+    for (const AVLTree::KeyType& key : keyList) std::cout << key << ", ";
+    std::cout << std::endl;
+
+    std::vector<AVLTree::ValueType> list = tree.findRange(0,15);
+    for (const AVLTree::ValueType& value : list) std::cout << value << ", ";
+    std::cout << std::endl;
+
+    list = tree.findRange(4,7);
+    for (const AVLTree::ValueType& value : list) std::cout << value << ", ";
+    std::cout << std::endl;
+
+    tree.remove(9);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(1);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(5);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(3);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(0);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(4);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(8);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(11);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(6);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(2);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+    tree.remove(7);
+    std::cout << tree.empty() << " " << tree.getHeight() << " " << tree.size() << std::endl;
+    std::cout << tree << std::endl;
+
+
+
+
+
     // AVLTree tree;
     // bool insertResult;
     // insertResult = tree.insert("F", 'F');

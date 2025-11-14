@@ -13,12 +13,29 @@
 
 class AVLTree {
 public:
-    using KeyType = std::string;
-    using ValueType = size_t;
+    using KeyType = size_t;
+    using ValueType = std::string;
+
+protected:
+    class AVLNode {
+    public:
+        KeyType key;
+        ValueType value;
+        size_t height;
+        AVLNode* left;
+        AVLNode* right;
+
+        AVLNode(KeyType key, ValueType value);
+        [[nodiscard]] unsigned char numChildren() const; // 0, 1 or 2
+        [[nodiscard]] bool isLeaf() const; // true or false
+        void recalcHeight();
+    };
+
+public:
 
     AVLTree();
-    AVLTree(KeyType& key , ValueType value);
     AVLTree(const AVLTree& other);
+
     ~AVLTree();
 
     AVLTree& operator=(const AVLTree& other);
@@ -34,50 +51,30 @@ public:
     [[nodiscard]] bool contains(const KeyType& key) const;
 
     void clear();
-    bool insert(const KeyType& key, ValueType value);
+    bool insert(const KeyType& key, const ValueType& value);
     bool remove(const KeyType& key);
 
     friend std::ostream& operator<<(std::ostream& os, const AVLTree & avlTree);
-
-protected:
-    class AVLNode {
-    public:
-        KeyType key;
-        ValueType value;
-        size_t height;
-        AVLNode* left;
-        AVLNode* right;
-
-        AVLNode(KeyType key, ValueType value);
-        [[nodiscard]] size_t numChildren() const; // 0, 1 or 2
-        [[nodiscard]] bool isLeaf() const; // true or false
-        [[nodiscard]] size_t getBalance() const;
-    private:
-        void recalcHeight();
-    };
-
+    friend std::ostream& operator<<(std::ostream& os, const AVLNode & node);
 
 private:
     AVLNode* root;
     size_t numNodes;
 
+    static AVLNode* findPredecessor(AVLNode* node);
+    static AVLNode* findSuccessor(AVLNode* node) ;
+    static AVLNode* findSmallest(AVLNode* localRoot);
+    static AVLNode* findLargest(AVLNode* localRoot);
+
+    static AVLNode* binarySearch(const KeyType& key, AVLNode* currNode);
+    static bool binaryInsert(const KeyType& key, const ValueType& value, AVLNode*& currNode);
+    static void binaryRemove(const KeyType& key, AVLNode*& currNode);
+
     static AVLNode* cloneTree(const AVLNode* currRoot);
-
-    AVLNode* binarySearchParent(const KeyType& key, AVLNode* currNode, bool& sideWithChild) const;
-    AVLNode* binarySearch(const KeyType& key, AVLNode* currNode) const;
-    bool binaryInsert(const KeyType& key, ValueType value, AVLNode* currNode);
     static void postOrderTraversalRemove(const AVLNode* currNode);
-    static void inOrderTraversalKeys(std::vector<AVLTree::KeyType>& keyVector, const AVLNode* currNode);
-    static void inOrderTraversalValues(std::vector<AVLTree::ValueType>& valueVector, const AVLNode* currNode, const KeyType& minKey, const KeyType& maxKey);
-
-    // /* Helper methods for remove */
-    // // this overloaded remove will do the recursion to remove the node
-    // bool remove(AVLNode*& current, KeyType key);
-    // // removeNode contains the logic for actually removing a node based on the number of children
-    // bool removeNode(AVLNode*& current);
-    // // You will implement this, but it is needed for removeNode()
-    // void balanceNode(AVLNode*& node);
-
+    static void inOrderTraversal_Keys(std::vector<KeyType>& keyVector, const AVLNode* currNode);
+    static void inOrderTraversal_ValuesForKeysInRange(std::vector<ValueType>& valueVector, const AVLNode* currNode, const KeyType& minKey, const KeyType& maxKey);
+    static void reverseInOrderTraversal(std::ostream& os, AVLNode* currNode, size_t depthCtr);
 };
 
 #endif //AVLTREE_H

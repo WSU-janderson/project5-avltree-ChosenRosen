@@ -1,6 +1,7 @@
 #ifndef AVLTREE_H
 #define AVLTREE_H
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
@@ -27,6 +28,7 @@ protected:
 
         AVLNode(KeyType key, ValueType value);
         [[nodiscard]] unsigned char numChildren() const; // 0, 1 or 2
+        [[nodiscard]] ptrdiff_t getBalance() const;
         [[nodiscard]] bool isLeaf() const; // true or false
         void recalcHeight();
     };
@@ -74,7 +76,11 @@ private:
     static void postOrderTraversalRemove(const AVLNode* currNode);
     static void inOrderTraversal_Keys(std::vector<KeyType>& keyVector, const AVLNode* currNode);
     static void inOrderTraversal_ValuesForKeysInRange(std::vector<ValueType>& valueVector, const AVLNode* currNode, const KeyType& minKey, const KeyType& maxKey);
-    static void reverseInOrderTraversal(std::ostream& os, AVLNode* currNode, size_t depthCtr);
+    static void reverseInOrderTraversal(std::ostream& os, const AVLNode* currNode, size_t depthCtr);
+
+    static void reBalance(AVLNode*& node);
+    static void leftRotation(AVLNode*& prob);
+    static void rightRotation(AVLNode*& prob);
 };
 
 #endif //AVLTREE_H

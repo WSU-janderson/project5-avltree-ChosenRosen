@@ -82,6 +82,10 @@ void AVLTree::clear() {
 }
 
 bool AVLTree::insert(const KeyType& key, const ValueType& value) {
+    if (numNodes >= (SIZE_MAX - 1) / 2) {
+        std::cout << "The tree is full! Cannot insert more nodes." << std::endl;
+        return false;
+    }
     const bool insResult = binaryInsert(key, value, root);
     if (insResult) ++numNodes;
     return insResult;
@@ -154,7 +158,10 @@ bool AVLTree::binaryInsert(const KeyType& key, const ValueType& value, AVLNode*&
     bool wasIns;
     if (key < currNode->key) wasIns = binaryInsert(key,value,currNode->left);
     else wasIns = binaryInsert(key,value,currNode->right);
-    if (wasIns) currNode->recalcHeight();
+    if (wasIns) {
+        currNode->recalcHeight();
+        reBalance(currNode);
+    }
     return wasIns;
 }
 
@@ -170,6 +177,7 @@ void AVLTree::binaryRemove(const KeyType &key, AVLNode *&currNode) {
         if (key < currNode->key) binaryRemove(key, currNode->left);
         else binaryRemove(key, currNode->right);
         currNode->recalcHeight();
+        reBalance(currNode);
     }
 }
 
@@ -209,7 +217,7 @@ void AVLTree::inOrderTraversal_ValuesForKeysInRange(std::vector<AVLTree::ValueTy
     }
 }
 
-void AVLTree::reverseInOrderTraversal(std::ostream& os, AVLNode *currNode, size_t depthCtr) {
+void AVLTree::reverseInOrderTraversal(std::ostream& os, const AVLNode *currNode, const size_t depthCtr) {
     if (currNode == nullptr) return;
     reverseInOrderTraversal(os, currNode->right, depthCtr + 1);
     for (size_t i = 0; i < depthCtr; ++i) {
@@ -232,6 +240,16 @@ unsigned char AVLTree::AVLNode::numChildren() const {
     return numReturned;
 }
 
+ptrdiff_t AVLTree::AVLNode::getBalance() const {
+    ptrdiff_t leftHeight;
+    ptrdiff_t rightHeight;
+    if (left == nullptr) {leftHeight = -1;}
+    else {leftHeight = left->height;}
+    if (right == nullptr) {rightHeight = -1;}
+    else {rightHeight = right->height;}
+    return leftHeight - rightHeight;
+}
+
 bool AVLTree::AVLNode::isLeaf() const {
     return ((left == nullptr) && (right == nullptr));
 }
@@ -246,4 +264,40 @@ void AVLTree::AVLNode::recalcHeight() {
         if (leftHeight > rightHeight) {height = leftHeight + 1;}
         else {height = rightHeight + 1;}
     }
+}
+
+void AVLTree::reBalance(AVLNode*& node) {
+    auto bal = node->getBalance();
+    if (bal < -1) {
+        auto rcBal = node->right->getBalance();
+        if (rcBal > 0) {
+            rightRotation(node->right);
+        }
+        leftRotation(node);
+    }
+    else if (bal > 1) {
+        auto lcBal = node->left->getBalance();
+        if (lcBal < 0) {
+            leftRotation(node->left);
+        }
+        rightRotation(node);
+    }
+}
+
+void AVLTree::leftRotation(AVLNode *&prob) {
+    AVLNode* hook = prob->right;
+    prob->right = hook->left;
+    hook->left = prob;
+    prob->recalcHeight();
+    hook->recalcHeight();
+    prob = hook;
+}
+
+void AVLTree::rightRotation(AVLNode *&prob) {
+    AVLNode* hook = prob->left;
+    prob->left = hook->right;
+    hook->right = prob;
+    prob->recalcHeight();
+    hook->recalcHeight();
+    prob = hook;
 }
